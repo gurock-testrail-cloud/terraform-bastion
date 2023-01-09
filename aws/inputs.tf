@@ -110,3 +110,8 @@ variable "encrypt_root_volume" {
   description = "If true, encrypt the root ebs volume of the bastion"
   default     = true
 }
+
+variable "asg_launch_configuration_template" {
+  description = "Choose to use either: launch configuration (configuration) or launch template (template), def configuration."
+  default     = "configuration"
+}

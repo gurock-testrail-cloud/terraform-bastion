@@ -22,6 +22,7 @@ data "template_file" "bastion_user_data" {
 }
 
 resource "aws_launch_configuration" "bastion" {
+  count = var.asg_launch_configuration_template == "configuration" ? 1 : 0
   # Generate a unique name for the Launch Configuration,
   # so the Auto Scaling Group can be updated without conflict before destroying the previous Launch Configuration.
   # Also see the related lifecycle block below.
@@ -50,4 +51,3 @@ resource "aws_launch_configuration" "bastion" {
     ignore_changes = [image_id]
   }
 }
-
