@@ -97,9 +97,17 @@ info "Configuring CloudWatch Agent. . ." && \
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:cloudwatch-agent.conf -s && \
 rm -f cloudwatch-agent.conf cloudwatch-agent.deb
 
+SESSION_TOKEN=$(curl -s -X PUT \
+"http://169.254.169.254/latest/api/token" \
+-H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+ROLE=$(curl -s \
+-H "X-aws-ec2-metadata-token: $${SESSION_TOKEN}" \
+http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+
 CREDS=$(curl -s \
--H "X-aws-ec2-metadata-token: $${TOKEN}" \
-http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
+-H "X-aws-ec2-metadata-token: $${SESSION_TOKEN}" \
+http://169.254.169.254/latest/meta-data/iam/security-credentials/$${ROLE})
 
 export AWS_ACCESS_KEY_ID=$(echo "$CREDS" | jq -r .AccessKeyId)
 export AWS_SECRET_ACCESS_KEY=$(echo "$CREDS" | jq -r .SecretAccessKey)
